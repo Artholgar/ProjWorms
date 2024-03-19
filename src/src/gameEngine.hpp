@@ -27,6 +27,14 @@ class Player {
     Vec2d forces = {0, 0};
     double canonAngle = 0.;
 
+    bool operator==(const Player& other) const {
+        return (x == other.x && y == other.y);
+    }
+
+    bool operator!=(const Player& other) const {
+        return (x != other.x || y != other.y);
+    }
+
     Player(double x, double y) : x{x}, y{y}{}
 };
 
@@ -99,8 +107,6 @@ class GameEngine
                 }
 
                 // ground collision
-                c3ga::Mvec<double> res = !( !playerC ^ !ground.vec );
-
                 c3ga::Mvec<double> dual_circle = (!ground.vec) | playerC;
                 double r2 = dual_circle | dual_circle;
 
@@ -120,10 +126,53 @@ class GameEngine
                 
                 rocket.forces.x -= rocket.forces.x * 0.001;
                 rocket.forces.y -= rocket.forces.y * 0.001 - _g * 0.001;
+
+                // represent the rocket as a circle
+                c3ga::Mvec<double> rocketC = c3ga::point<double>(rocket.x, rocket.y - 2,-1)
+                    ^ c3ga::point<double>(rocket.x + 2, rocket.y,0)
+                    ^ c3ga::point<double>(rocket.x - 2, rocket.y,1);
+
+                // ground collision
+                c3ga::Mvec<double> dual_circle = (!ground.vec) | rocketC;
+                double r2 = dual_circle | dual_circle;
+
+                if (r2 < 0) {
+                    _rockets.erase(_rockets.begin());
+                    _isRocket = false;
+                    return;
+                }
+
+                // collision player rocket
+                for (auto& player : _players) {
+                    // represent the player as a circle
+                    c3ga::Mvec<double> playerC = c3ga::point<double>(player.x, player.y + 10,0)
+                            ^ c3ga::point<double>(player.x + 10, player.y,0)
+                            ^ c3ga::point<double>(player.x - 10, player.y,0);
+
+                    auto dist = sqrt(pow(rocket.x - player.x, 2) + pow(rocket.y - player.y, 2));
+
+                    if (dist <= 10 + 2 && player == getCurrentPlayer()) {
+                        std::cout << "colis" << std::endl;
+                    }
+
+                    /* c3ga::Mvec<double> res = playerC ^ rocketC;
+
+                    std::cout << res.grades().size() << std::endl;
+
+                    c3ga::Mvec<double> dual_circle = rocketC | playerC;
+                    double r2 = dual_circle | dual_circle;
+
+                    if (r2 < 0) {
+                        std::cout << "test" << std::endl;
+                    } */
+                }
             }
         }
 
         void eventKeyDown(SDL_Event events) {
+            if (_isRocket) {
+                return;
+            }
             if (_state == MOVEMENT) {
                 if (events.key.keysym.scancode == SDL_SCANCODE_D) {
                     auto& player = getCurrentPlayer();
@@ -163,6 +212,7 @@ class GameEngine
                     auto& player = getCurrentPlayer();
                     std::cout << cos(player.canonAngle) << " " << sin(player.canonAngle) << std::endl;
                     _rockets.emplace_back(Rocket(player.x, player.y, cos(player.canonAngle), sin(player.canonAngle)));
+                    _isRocket = true;
                     nextRound();
                     return;
                 }
@@ -193,4 +243,5 @@ class GameEngine
         int _g = 1;
         Ground ground;
         std::vector<Rocket> _rockets;
+        bool _isRocket = false;
 };
