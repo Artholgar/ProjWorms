@@ -89,6 +89,9 @@ int main(int argc, char* argv[])
             case SDL_QUIT:
                 isOpen = false;
                 break;
+            case SDL_KEYDOWN:
+                eventKeyDown(events);
+                break;
             }
         }
 
