@@ -1,8 +1,3 @@
-// Inclure la bibliothèque SDL
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h> 
-#include <c3ga/Mvec.hpp> 
-
 // Inclusion des bibliothèque standard C++ 
 #include <cstdlib>  
 #include <iostream> 
@@ -23,7 +18,7 @@ int main(int argc, char* argv[])
     auto pt1 = c3ga::point<double>(0, HEIGHTSCREEN<int> - 150, 0);
     auto pt2 = c3ga::point<double>(WIDTHSCREEN<int>, HEIGHTSCREEN<int> - 150, 0);
 
-    ground.ground = pt1 ^ pt2;
+    ground.vec = pt1 ^ pt2;
 
     GameEngine ge(5, HEIGHTSCREEN<int>, WIDTHSCREEN<int>);
 
@@ -103,7 +98,7 @@ int main(int argc, char* argv[])
                 isOpen = false;
                 break;
             case SDL_KEYDOWN:
-                eventKeyDown(events);
+                ge.eventKeyDown(events);
                 break;
             }
         }
@@ -119,13 +114,9 @@ int main(int argc, char* argv[])
         SDL_RenderDrawLine(pRenderer, pt1[c3ga::E1], pt1[c3ga::E2], pt2[c3ga::E1], pt2[c3ga::E2]);
         // SDL_RenderDrawRect(pRenderer, &rectangle1);
 
-        auto players = ge.getPlayers();
+        ge.updatePlayers();
 
-        for (const auto player : players) {
-            SDL_Rect rect{player.x, player.y, 50, 50};
-            SDL_RenderCopy(pRenderer, pTexture, nullptr, &rect);
-            // SDL_RenderDrawRect(pRenderer, &rect);
-        }
+        ge.drawWorms(pRenderer, pTexture);
 
         SDL_RenderPresent(pRenderer); // Mise à jour de la fenêtre 
     }
