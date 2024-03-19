@@ -95,7 +95,6 @@ int main(int argc, char* argv[])
             }
         }
 
-
         // Rendering
         SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Choisir la couleur noir  
         SDL_RenderClear(pRenderer); // Colorier en noir toutes la fenêtre 
