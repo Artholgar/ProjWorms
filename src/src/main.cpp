@@ -4,7 +4,9 @@
 #include <c3ga/Mvec.hpp> 
 
 // Inclusion des bibliothèque standard C++ 
-#include <cstdlib>    
+#include <cstdlib>   
+
+#include "gameEngine.hpp"
 
 // Définition des constante 
 template<typename T>
