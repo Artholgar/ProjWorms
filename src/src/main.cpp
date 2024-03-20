@@ -6,20 +6,13 @@
 
 // Définition des constante 
 template<typename T>
-constexpr T WIDTHSCREEN{ 800 };
+constexpr T WIDTHSCREEN{ 1200 };
 
 template<typename T>
-constexpr T HEIGHTSCREEN{ 600 };
+constexpr T HEIGHTSCREEN{ 800 };
 
 int main(int argc, char* argv[])
 {
-    Ground ground;
-
-    auto pt1 = c3ga::point<double>(0, HEIGHTSCREEN<int> - 150, 0);
-    auto pt2 = c3ga::point<double>(WIDTHSCREEN<int>, HEIGHTSCREEN<int> - 150, 0);
-
-    ground.vec = pt1 ^ pt2;
-
     GameEngine ge(5, HEIGHTSCREEN<int>, WIDTHSCREEN<int>);
 
     // Chargement du module vidéo de la SDL 
@@ -75,17 +68,9 @@ int main(int argc, char* argv[])
     }
     SDL_Texture *pTexture=SDL_CreateTextureFromSurface(pRenderer,pSurface);
 
-    //SDL_Texture* pTexture = IMG_LoadTexture(pRenderer, "../../textures/player.png");
-
     SDL_Event events;
     bool isOpen{ true };
 
-    // SDL_Rect rectangle1{WIDTHSCREEN<int> / 2 - 100 / 2, HEIGHTSCREEN<int> / 2 - 50 / 2, 100, 50};
-    auto players = ge.getPlayers();
-
-    for (const auto player : players) {
-        std::cout << player.x << " " << player.y << std::endl;
-    }
     // Game loop
     while (isOpen)
     {
@@ -106,13 +91,6 @@ int main(int argc, char* argv[])
         // Rendering
         SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255); // Choisir la couleur noir  
         SDL_RenderClear(pRenderer); // Colorier en noir toutes la fenêtre 
-        
-        // SDL_RenderCopy(pRenderer, pTexture, nullptr, nullptr);
-        SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
-
-        // ground
-        SDL_RenderDrawLine(pRenderer, pt1[c3ga::E1], pt1[c3ga::E2], pt2[c3ga::E1], pt2[c3ga::E2]);
-        // SDL_RenderDrawRect(pRenderer, &rectangle1);
 
         ge.updatePlayers();
 
